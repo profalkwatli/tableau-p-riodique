@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atomes — tableau périodique interactif- Developed by Prof. AL KWATLI D.M.A. (E-mail: dr.alkwatli@gmail.com)</title>
+<style>
+:root{--navy:#102b50;--blue:#2457a6;--pale:#edf3fb;--ink:#17243a;--muted:#65758c;--line:#d8e1ec;--paper:#fff;--bg:#f3f6fa;--green:#18794e;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(115deg,#102b50,#285ca5);color:#fff;padding:22px clamp(15px,3vw,36px)}
+header h1{margin:0 0 7px;font-size:clamp(24px,3vw,35px)}header p{margin:0;max-width:950px;line-height:1.5;color:#e5eefb}
+main{max-width:1600px;margin:auto;padding:18px}
+.modebar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.modebar button{border:1px solid var(--line);background:white;color:var(--ink);border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}
+.modebar button.active{background:var(--blue);border-color:var(--blue);color:white}
+.view{display:none}.view.active{display:block}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 3px 14px #1c35520b}
+h2{margin:0 0 6px;font-size:23px}h3{font-size:16px;margin:17px 0 9px}
+.sub{color:var(--muted);line-height:1.5;margin:0 0 14px}
+.controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0}
+input,select,button{font:inherit;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:white;color:var(--ink)}
+input{min-width:180px}button{cursor:pointer}button.primary{background:var(--blue);color:white;border-color:var(--blue)}button.secondary{background:#eef3fa}
+button:disabled{opacity:.45;cursor:not-allowed}
+.discovery-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(340px,.9fr);gap:14px;align-items:start}
+.periodic-wrap{overflow:auto}.periodic{display:grid;grid-template-columns:repeat(18,minmax(44px,1fr));gap:4px;min-width:850px}
+.el{min-height:63px;border:1px solid #cbd6e4;border-radius:7px;padding:4px 2px;text-align:center;cursor:pointer;display:flex;flex-direction:column;justify-content:center;transition:.12s}
+.el:hover{transform:translateY(-2px);box-shadow:0 3px 9px #182d4b30}.el.selected{outline:3px solid #152f54;outline-offset:1px}
+.el .z{font-size:9px;text-align:left;padding-left:3px}.el .sym{font-size:19px;font-weight:700}.el .nm{font-size:9px;overflow-wrap:anywhere}
+.empty{min-height:1px}.placeholder{background:#f0f3f7;border:1px dashed #cbd6e4;border-radius:7px;display:grid;place-items:center;text-align:center;font-size:10px;color:var(--muted)}
+.alkali{background:#f7c9c5}.alkaline{background:#f8dfad}.transition{background:#f5e6a9}.post{background:#c9e4d2}.metalloid{background:#b9e0dc}.nonmetal{background:#b9d7f5}.halogen{background:#d3c8f3}.noble{background:#e4c8ed}.lanth{background:#f4c9df}.act{background:#edc8c5}
+.legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.legend span{font-size:10px;padding:5px 7px;border-radius:6px;border:1px solid #d5deea}
+.detail-head{display:flex;align-items:center;gap:12px}.symbol-card{width:76px;height:76px;flex:none;border-radius:12px;background:#eaf1fb;display:grid;place-items:center;color:var(--blue);font-size:38px;font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.stat{background:#f2f6fb;padding:9px;border-radius:8px}.stat small{display:block;color:var(--muted);font-size:11px}.stat b{font-size:17px}
+.data-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.tile{border:1px solid var(--line);border-radius:9px;padding:8px 4px;text-align:center;background:#fbfcfe}.tile strong{display:block;font-size:21px;color:var(--blue)}.tile span{font-size:11px;color:var(--muted)}
+.config{background:#102b50;color:#f3f7ff;border-radius:9px;padding:11px;line-height:1.8;overflow-wrap:anywhere;font-family:Consolas,monospace;font-size:14px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.atom-box{background:radial-gradient(circle at center,#f9fbff,#edf3fb);border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;min-height:340px;overflow:hidden}
+.atom-svg{width:min(100%,360px);height:auto}.shell-ring{fill:none;stroke:#9bb1ce;stroke-width:1.5;stroke-dasharray:4 4}.nucleus{fill:#e98a50;stroke:#b95727;stroke-width:2}.nucleus-text{font-size:12px;fill:#fff;font-weight:bold;text-anchor:middle}.electron{fill:#2457a6;stroke:white;stroke-width:1.2}
+.rotate{transform-box:fill-box;transform-origin:center;animation:spin var(--speed) linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.orbital-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.orbital{border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;background:#fbfcfe}.orbital b{display:block}.orbital .count{font-size:12px;color:var(--muted)}
+.builder-layout{display:grid;grid-template-columns:minmax(250px,.75fr) minmax(0,1.25fr);gap:14px}
+.builder-orbitals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.orbital-row{border:1px solid var(--line);border-radius:9px;padding:9px;background:#fbfcfe}
+.orbital-row header{background:none;color:var(--ink);padding:0;display:flex;justify-content:space-between;align-items:center;font-weight:bold}
+.boxes{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.obox{width:34px;height:38px;border:1.5px solid #71839a;border-radius:5px;display:grid;place-items:center;font-size:18px;color:var(--blue);background:white}.obox span{font-weight:700;letter-spacing:-2px}
+.boxes .obox span{font-size:19px}.small{font-size:12px;color:var(--muted);line-height:1.5}
+.feedback{padding:10px;border-radius:9px;margin-top:10px;display:none;line-height:1.5}.feedback.good{display:block;background:#e8f5ed;color:#17633e}.feedback.bad{display:block;background:#fff0ef;color:#9f251d}
+.quiz-card{max-width:900px;margin:auto}.question{font-size:20px;font-weight:700;margin:14px 0}.answer-input{width:100%;max-width:700px}.score{font-weight:700;color:var(--blue)}
+@media(max-width:1000px){.discovery-grid,.two-col,.builder-layout{grid-template-columns:1fr}}
+@media(max-width:560px){main{padding:9px}.panel{padding:11px}.data-grid{grid-template-columns:repeat(4,1fr)}.orbital-list{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>Atomes : tableau périodique et structure électronique - Developed by Prof. AL KWATLI D.M.A. (E-mail: dr.alkwatli@gmail.com)</h1><p>Une application interactive pour explorer les éléments, construire une configuration électronique et s'entraîner. Les couches K, L, M, N… et les sous-couches s, p, d, f sont reliées dans une même activité.</p></header>
+<main>
+<nav class="modebar" aria-label="Modes de l'application">
+<button class="active" data-mode="discover">1. Découverte</button><button data-mode="build">2. Construction</button><button data-mode="train">3. Entraînement</button>
+</nav>
+
+<section class="view active" id="discover">
+<div class="discovery-grid">
+<div class="panel">
+<h2>Explorer le tableau périodique</h2><p class="sub">Sélectionne un élément. Son modèle en couches, ses sous-couches et sa configuration électronique s'affichent à droite.</p>
+<div class="controls"><input id="search" placeholder="Nom, symbole ou numéro atomique…" type="search"><select id="family"><option value="all">Toutes les familles</option><option value="alkali">Métaux alcalins</option><option value="alkaline">Alcalino-terreux</option><option value="transition">Métaux de transition</option><option value="post">Autres métaux</option><option value="metalloid">Métalloïdes</option><option value="nonmetal">Non-métaux</option><option value="halogen">Halogènes</option><option value="noble">Gaz nobles</option><option value="lanth">Lanthanides</option><option value="act">Actinides</option></select><button id="resetTable" class="secondary">Tout afficher</button></div>
+<div class="periodic-wrap"><div id="periodic" class="periodic"></div></div>
+<div class="legend"><span class="alkali">Alcalins</span><span class="alkaline">Alcalino-terreux</span><span class="transition">Transition</span><span class="post">Autres métaux</span><span class="metalloid">Métalloïdes</span><span class="nonmetal">Non-métaux</span><span class="halogen">Halogènes</span><span class="noble">Gaz nobles</span><span class="lanth">Lanthanides</span><span class="act">Actinides</span></div>
+</div>
+<div class="panel" id="elementDetail"></div>
+</div>
+<div class="panel" style="margin-top:14px"><h3>À retenir</h3><p class="small">K, L, M, N correspondent aux couches de nombres quantiques principaux n = 1, 2, 3, 4. Les sous-couches s, p, d et f ont des capacités maximales respectives de 2, 6, 10 et 14 électrons. L'ordre énergétique de remplissage ne suit pas toujours l'ordre des couches : par exemple, 4s se remplit avant 3d. Le modèle circulaire est une représentation pédagogique simplifiée, pas une trajectoire réelle des électrons.</p></div>
+</section>
+
+<section class="view" id="build">
+<div class="panel">
+<h2>Construire une configuration électronique</h2><p class="sub">Choisis un numéro atomique (de 1 à 36), puis ajoute les électrons dans les sous-couches. Tu peux modifier ta construction avant de demander la correction.</p>
+<div class="builder-layout">
+<div>
+<div class="controls"><label for="buildZ"><b>Numéro atomique Z</b></label><input id="buildZ" type="number" min="1" max="36" value="8" style="width:100px;min-width:100px"><button id="newBuild" class="primary">Nouvel atome</button></div>
+<div id="buildTarget" class="config"></div>
+<p class="small">Rappel : s possède 1 orbitale (2 e⁻), p possède 3 orbitales (6 e⁻), d possède 5 orbitales (10 e⁻). Clique une première fois dans une case pour placer ↑, puis une deuxième fois dans la même case pour ajouter ↓ lorsque toutes les orbitales de la sous-couche sont occupées une première fois. Chaque case peut contenir au maximum 2 électrons de spins opposés (↑↓). Chaque case représente une orbitale : un premier clic place ↑. Un deuxième clic sur la même case ajoute ↓, mais seulement après avoir placé un premier électron dans chacune des orbitales de la sous-couche (règle de Hund).</p>
+<div class="config" style="background:#eef3fa;color:#18324f">1s → 2s → 2p → 3s → 3p → 4s → 3d → 4p</div>
+<div class="controls"><button id="addNext" class="primary">+ Ajouter l'électron suivant</button><button id="undo" class="secondary">Annuler le dernier</button><button id="clearBuild" class="secondary">Recommencer</button></div>
+</div>
+<div>
+<h3 style="margin-top:0">Tes sous-couches</h3><div id="builderOrbitals" class="builder-orbitals"></div>
+<div class="controls"><button id="checkBuild" class="primary">Vérifier ma configuration</button></div><div id="buildFeedback" class="feedback"></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="view" id="train">
+<div class="panel quiz-card">
+<h2>Entraînement — à toi de jouer !</h2><p class="sub">Deux types de questions sont proposés. Les exercices portent sur les 36 premiers éléments afin de travailler l'ordre de remplissage et les exceptions classiques du chrome et du cuivre.</p>
+<div class="controls"><button class="primary" id="quizZ">Z → configuration</button><button class="secondary" id="quizConfig">Configuration → élément</button><span class="score" id="score">Score : 0 / 0</span></div>
+<div id="quizQuestion" class="question">Choisis un type de question pour commencer.</div>
+<div id="quizHint" class="small"></div>
+<div class="controls"><input id="quizAnswer" class="answer-input" placeholder="Écris ta réponse ici…"><button id="checkQuiz" class="primary">Valider</button><button id="nextQuiz" class="secondary">Question suivante</button></div>
+<div id="quizFeedback" class="feedback"></div>
+</div>
+</section>
+</main>
+<script>
+const raw = [
+["H","Hydrogène"],["He","Hélium"],["Li","Lithium"],["Be","Béryllium"],["B","Bore"],["C","Carbone"],["N","Azote"],["O","Oxygène"],["F","Fluor"],["Ne","Néon"],["Na","Sodium"],["Mg","Magnésium"],["Al","Aluminium"],["Si","Silicium"],["P","Phosphore"],["S","Soufre"],["Cl","Chlore"],["Ar","Argon"],["K","Potassium"],["Ca","Calcium"],["Sc","Scandium"],["Ti","Titane"],["V","Vanadium"],["Cr","Chrome"],["Mn","Manganèse"],["Fe","Fer"],["Co","Cobalt"],["Ni","Nickel"],["Cu","Cuivre"],["Zn","Zinc"],["Ga","Gallium"],["Ge","Germanium"],["As","Arsenic"],["Se","Sélénium"],["Br","Brome"],["Kr","Krypton"],
+["Rb","Rubidium"],["Sr","Strontium"],["Y","Yttrium"],["Zr","Zirconium"],["Nb","Niobium"],["Mo","Molybdène"],["Tc","Technétium"],["Ru","Ruthénium"],["Rh","Rhodium"],["Pd","Palladium"],["Ag","Argent"],["Cd","Cadmium"],["In","Indium"],["Sn","Étain"],["Sb","Antimoine"],["Te","Tellure"],["I","Iode"],["Xe","Xénon"],["Cs","Césium"],["Ba","Baryum"],["La","Lanthane"],["Ce","Cérium"],["Pr","Praséodyme"],["Nd","Néodyme"],["Pm","Prométhium"],["Sm","Samarium"],["Eu","Europium"],["Gd","Gadolinium"],["Tb","Terbium"],["Dy","Dysprosium"],["Ho","Holmium"],["Er","Erbium"],["Tm","Thulium"],["Yb","Ytterbium"],["Lu","Lutécium"],["Hf","Hafnium"],["Ta","Tantale"],["W","Tungstène"],["Re","Rhénium"],["Os","Osmium"],["Ir","Iridium"],["Pt","Platine"],["Au","Or"],["Hg","Mercure"],["Tl","Thallium"],["Pb","Plomb"],["Bi","Bismuth"],["Po","Polonium"],["At","Astate"],["Rn","Radon"],["Fr","Francium"],["Ra","Radium"],["Ac","Actinium"],["Th","Thorium"],["Pa","Protactinium"],["U","Uranium"],["Np","Neptunium"],["Pu","Plutonium"],["Am","Américium"],["Cm","Curium"],["Bk","Berkélium"],["Cf","Californium"],["Es","Einsteinium"],["Fm","Fermium"],["Md","Mendélévium"],["No","Nobélium"],["Lr","Lawrencium"],["Rf","Rutherfordium"],["Db","Dubnium"],["Sg","Seaborgium"],["Bh","Bohrium"],["Hs","Hassium"],["Mt","Meitnérium"],["Ds","Darmstadtium"],["Rg","Roentgenium"],["Cn","Copernicium"],["Nh","Nihonium"],["Fl","Flérovium"],["Mc","Moscovium"],["Lv","Livermorium"],["Ts","Tennesse"],["Og","Oganesson"]
+];
+const pos={1:[1,1],2:[1,18],3:[2,1],4:[2,2],5:[2,13],6:[2,14],7:[2,15],8:[2,16],9:[2,17],10:[2,18],11:[3,1],12:[3,2],13:[3,13],14:[3,14],15:[3,15],16:[3,16],17:[3,17],18:[3,18],19:[4,1],20:[4,2],21:[4,3],22:[4,4],23:[4,5],24:[4,6],25:[4,7],26:[4,8],27:[4,9],28:[4,10],29:[4,11],30:[4,12],31:[4,13],32:[4,14],33:[4,15],34:[4,16],35:[4,17],36:[4,18],37:[5,1],38:[5,2],39:[5,3],40:[5,4],41:[5,5],42:[5,6],43:[5,7],44:[5,8],45:[5,9],46:[5,10],47:[5,11],48:[5,12],49:[5,13],50:[5,14],51:[5,15],52:[5,16],53:[5,17],54:[5,18],55:[6,1],56:[6,2],72:[6,4],73:[6,5],74:[6,6],75:[6,7],76:[6,8],77:[6,9],78:[6,10],79:[6,11],80:[6,12],81:[6,13],82:[6,14],83:[6,15],84:[6,16],85:[6,17],86:[6,18],87:[7,1],88:[7,2],104:[7,4],105:[7,5],106:[7,6],107:[7,7],108:[7,8],109:[7,9],110:[7,10],111:[7,11],112:[7,12],113:[7,13],114:[7,14],115:[7,15],116:[7,16],117:[7,17],118:[7,18]};
+for(let z=57;z<=71;z++)pos[z]=[9,z-54];for(let z=89;z<=103;z++)pos[z]=[10,z-86];
+const family=z=>z===1?'nonmetal':z===2?'noble':[3,11,19,37,55,87].includes(z)?'alkali':[4,12,20,38,56,88].includes(z)?'alkaline':z>=57&&z<=71?'lanth':z>=89&&z<=103?'act':[9,17,35,53,85,117].includes(z)?'halogen':[10,18,36,54,86,118].includes(z)?'noble':[5,14,32,33,51,52,84].includes(z)?'metalloid':[6,7,8,15,16,34].includes(z)?'nonmetal':((z>=21&&z<=30)||(z>=39&&z<=48)||(z>=72&&z<=80)||(z>=104&&z<=112))?'transition':[13,31,49,50,81,82,83,113,114,115,116].includes(z)?'post':'transition';
+const famNames={alkali:'Métal alcalin',alkaline:'Métal alcalino-terreux',transition:'Métal de transition',post:'Autre métal',metalloid:'Métalloïde',nonmetal:'Non-métal',halogen:'Halogène',noble:'Gaz noble',lanth:'Lanthanide',act:'Actinide'};
+const els=raw.map((a,i)=>({z:i+1,s:a[0],name:a[1],fam:family(i+1)}));
+const order=[['1s',2],['2s',2],['2p',6],['3s',2],['3p',6],['4s',2],['3d',10],['4p',6],['5s',2],['4d',10],['5p',6],['6s',2],['4f',14],['5d',10],['6p',6],['7s',2],['5f',14],['6d',10],['7p',6]];
+const exceptions={24:{'4s':1,'3d':5},29:{'4s':1,'3d':10}};
+function makeConfig(z){let left=z,o={};for(const [k,cap] of order){const n=Math.min(left,cap);o[k]=n;left-=n;if(!left)break;}if(exceptions[z])Object.assign(o,exceptions[z]);return o}
+function confText(o){return order.filter(([k])=>(o[k]||0)>0).map(([k])=>`${k}<sup>${o[k]}</sup>`).join(' ')}
+function shellCounts(o){let a=Array(8).fill(0);for(const [k,v] of Object.entries(o))if(v)a[Number(k[0])]+=v;return a}
+function shortConf(z,o){const cores=[[2,'[He]'],[10,'[Ne]'],[18,'[Ar]'],[36,'[Kr]'],[54,'[Xe]'],[86,'[Rn]']];const core=cores.filter(x=>x[0]<z).pop();if(!core)return confText(o);const base=makeConfig(core[0]),d={...o};for(const [k,v] of Object.entries(base))d[k]=Math.max(0,(d[k]||0)-v);return core[1]+' '+confText(d)}
+function labelShell(i){return ['','K','L','M','N','O','P','Q'][i]}
+let selected=8;
+function filtered(){let q=document.getElementById('search').value.trim().toLowerCase(),f=document.getElementById('family').value;return els.filter(e=>(f==='all'||e.fam===f)&&(!q||e.name.toLowerCase().includes(q)||e.s.toLowerCase()===q||String(e.z)===q))}
+function drawTable(){let root=document.getElementById('periodic'),list=filtered(),by=new Map(list.map(e=>[e.z,e]));root.innerHTML='';for(let r=1;r<=10;r++)for(let c=1;c<=18;c++){let z=Object.keys(pos).find(k=>pos[k][0]===r&&pos[k][1]===c),cell=document.createElement('div');if(z&&by.has(+z)){let e=by.get(+z);cell.className='el '+e.fam+(selected===e.z?' selected':'');cell.innerHTML=`<span class="z">${e.z}</span><span class="sym">${e.s}</span><span class="nm">${e.name}</span>`;cell.onclick=()=>select(+z)}else if((r===6||r===7)&&c===3){cell.className='placeholder';cell.innerHTML=r===6?'57–71<br>Lanthanides':'89–103<br>Actinides'}else cell.className='empty';root.appendChild(cell)}}
+function atomSVG(z,counts){let shells='';for(let n=1;n<=7;n++){let count=counts[n]||0;if(!count)continue;let r=27+n*19,elecs='';for(let i=0;i<count;i++){let a=2*Math.PI*i/count-Math.PI/2,x=180+r*Math.cos(a),y=180+r*Math.sin(a);elecs+=`<circle class="electron" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="5"/>`}shells+=`<circle class="shell-ring" cx="180" cy="180" r="${r}"/><g class="rotate" style="--speed:${Math.max(5,18-n*1.4)}s">${elecs}</g>`}return `<svg class="atom-svg" viewBox="0 0 360 360" role="img" aria-label="Modèle simplifié en couches de l'atome ${z}">${shells}<circle class="nucleus" cx="180" cy="180" r="20"/><text class="nucleus-text" x="180" y="184">+${z}</text></svg>`}
+function select(z){selected=z;drawTable();let e=els[z-1],o=makeConfig(z),sc=shellCounts(o),subs=order.filter(([k])=>(o[k]||0)>0);document.getElementById('elementDetail').innerHTML=`<div class="detail-head"><div class="symbol-card">${e.s}</div><div><h2>${e.name}</h2><div class="small">${famNames[e.fam]} · Z = ${z}</div></div></div><div class="stats"><div class="stat"><small>Numéro atomique</small><b>${z}</b></div><div class="stat"><small>Électrons (atome neutre)</small><b>${z}</b></div></div><h3>Modèle animé en couches</h3><div class="atom-box">${atomSVG(z,sc)}</div><div class="small">Représentation schématique : les points bleus figurent les électrons. Leur rotation est illustrative et ne représente pas des orbites réelles.</div><h3>Répartition par couches</h3><div class="data-grid">${[1,2,3,4,5,6,7].map(n=>`<div class="tile"><strong>${labelShell(n)}</strong><b>${sc[n]||0}</b><span>n = ${n}</span></div>`).join('')}</div><h3>Sous-couches occupées</h3><div class="orbital-list">${subs.map(([k,cap])=>`<div class="orbital"><b>${k}</b><div>${'●'.repeat(o[k])}${'○'.repeat(cap-o[k])}</div><span class="count">${o[k]} / ${cap} e⁻</span></div>`).join('')}</div><h3>Configuration électronique</h3><div class="config">${confText(o)}</div><h3>Écriture abrégée</h3><div class="config">${shortConf(z,o)}</div><p class="small">Pour l'apprentissage des configurations, les modes Construction et Entraînement sont limités aux éléments 1 à 36. Au-delà, cette vue donne une configuration indicative basée sur l'ordre de remplissage simplifié.</p>`}
+document.getElementById('search').addEventListener('input',drawTable);document.getElementById('family').addEventListener('change',drawTable);document.getElementById('resetTable').onclick=()=>{document.getElementById('search').value='';document.getElementById('family').value='all';drawTable()};
+
+// Navigation
+document.querySelectorAll('.modebar button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.modebar button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===b.dataset.mode))});
+
+// Construction mode: guided orbital filling, with manually editable boxes
+let targetZ=8,placed={},history=[];
+const buildOrder=order.slice(0,8);
+function blankBuild(){placed={};buildOrder.forEach(([k])=>placed[k]=0);history=[];renderBuild()}
+function renderBuild(){document.getElementById('buildTarget').textContent=`Atome neutre : Z = ${targetZ} — ${els[targetZ-1].name}`;let root=document.getElementById('builderOrbitals');root.innerHTML='';buildOrder.forEach(([k,cap])=>{let row=document.createElement('div');row.className='orbital-row';let header=document.createElement('header');header.innerHTML=`<span>${k}</span><span>${placed[k]||0}/${cap}</span>`;let boxes=document.createElement('div');boxes.className='boxes';const l=k.slice(-1), orbitalCount=({s:1,p:3,d:5,f:7})[l], electrons=placed[k]||0;for(let i=0;i<orbitalCount;i++){let box=document.createElement('div');box.className='obox';let occupancy=0;if(i<Math.min(electrons,orbitalCount))occupancy=1;if(i<Math.max(0,electrons-orbitalCount))occupancy=2;let arrow=occupancy===2?'↑↓':occupancy===1?'↑':'';box.innerHTML=`<span>${arrow}</span>`;box.title=`${k}, orbitale ${i+1} : ${arrow||'vide'}`;box.onclick=()=>{if(electrons>=cap||totalPlaced()>=targetZ)return;const firstEmpty=Math.min(electrons,orbitalCount);const canAddSingle=(electrons<orbitalCount&&i===firstEmpty);const canPair=(electrons>=orbitalCount&&i<orbitalCount&&occupancy===1);if(canAddSingle||canPair){placed[k]=electrons+1;history.push({...placed});renderBuild()}};boxes.appendChild(box)}row.append(header,boxes);root.appendChild(row)});document.getElementById('buildFeedback').className='feedback';document.getElementById('buildFeedback').textContent=''}
+function totalPlaced(){return Object.values(placed).reduce((a,b)=>a+b,0)}
+function nextOrbital(){for(const [k,cap] of buildOrder)if((placed[k]||0)<cap)return k;return null}
+document.getElementById('newBuild').onclick=()=>{let z=Math.max(1,Math.min(36,Number(document.getElementById('buildZ').value)||1));targetZ=z;document.getElementById('buildZ').value=z;blankBuild()};
+document.getElementById('buildZ').onchange=()=>document.getElementById('newBuild').click();
+document.getElementById('addNext').onclick=()=>{if(totalPlaced()>=targetZ)return;let k=nextOrbital();if(k){placed[k]++;history.push({...placed});renderBuild()}};
+document.getElementById('undo').onclick=()=>{if(history.length){history.pop();placed=history.length?{...history[history.length-1]}:Object.fromEntries(buildOrder.map(([k])=>[k,0]));renderBuild()}};
+document.getElementById('clearBuild').onclick=blankBuild;
+document.getElementById('checkBuild').onclick=()=>{let expected=makeConfig(targetZ),ok=buildOrder.every(([k])=>(placed[k]||0)===(expected[k]||0));let f=document.getElementById('buildFeedback');f.className='feedback '+(ok?'good':'bad');f.innerHTML=ok?`Bravo ! Ta configuration est correcte : <b>${confText(expected)}</b>`:`Ce n'est pas encore correct. Tu as placé ${totalPlaced()} électron(s) sur ${targetZ}. Vérifie le nombre total et l'ordre de remplissage. <br><b>Indice :</b> la sous-couche ${nextOrbital()||'déjà remplie'} est la prochaine à compléter selon l'ordre proposé.`};
+blankBuild();
+
+// Quiz
+let qType='',qZ=8,score=0,answered=0,done=false;
+function norm(s){return s.toLowerCase().replace(/\s/g,'').replace(/<[^>]*>/g,'').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,'').replace(/<sup>|<\/sup>/g,'')}
+function plainConfig(z){return order.filter(([k])=>makeConfig(z)[k]>0).map(([k])=>k+makeConfig(z)[k]).join(' ')}
+function newQuestion(){done=false;document.getElementById('quizAnswer').value='';document.getElementById('quizFeedback').className='feedback';qZ=1+Math.floor(Math.random()*36);let e=els[qZ-1];if(qType==='z'){document.getElementById('quizQuestion').innerHTML=`Écris la configuration électronique de <b>${e.name}</b> (Z = ${qZ}).`;document.getElementById('quizHint').textContent='Écris les sous-couches dans l’ordre de remplissage, par exemple : 1s2 2s2 2p4.'}else{document.getElementById('quizQuestion').innerHTML=`À quel élément correspond cette configuration ? <div class="config" style="margin-top:10px">${confText(makeConfig(qZ))}</div>`;document.getElementById('quizHint').textContent='Écris le nom de l’élément ou son symbole chimique.'}}
+function startQuiz(type){qType=type;newQuestion()}
+document.getElementById('quizZ').onclick=()=>startQuiz('z');document.getElementById('quizConfig').onclick=()=>startQuiz('config');document.getElementById('nextQuiz').onclick=()=>{if(!qType)qType='z';newQuestion()};
+document.getElementById('checkQuiz').onclick=()=>{if(!qType||done)return;let val=document.getElementById('quizAnswer').value.trim(),correct=qType==='z'?norm(val)===norm(plainConfig(qZ)):(norm(val)===norm(els[qZ-1].name)||norm(val)===norm(els[qZ-1].s));done=true;answered++;if(correct)score++;document.getElementById('score').textContent=`Score : ${score} / ${answered}`;let f=document.getElementById('quizFeedback');f.className='feedback '+(correct?'good':'bad');f.innerHTML=correct?'Bonne réponse !':'Pas tout à fait. '+(qType==='z'?`La réponse attendue est : <b>${plainConfig(qZ)}</b>.`:`Il s’agissait de <b>${els[qZ-1].name} (${els[qZ-1].s})</b>.`)};
+document.getElementById('quizAnswer').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('checkQuiz').click()});
+drawTable();select(8);
+</script>
+</body></html>
+<!-- Protection contre les raccourcis et le clic droit -->
+<script>
+document.addEventListener("keydown", function(event) {
+    if (event.key === "F12") {
+        event.preventDefault();
+    }
+
+    if (event.ctrlKey && event.shiftKey &&
+        ["I", "J", "C"].includes(event.key.toUpperCase())) {
+        event.preventDefault();
+    }
+
+    if (event.ctrlKey && event.key.toUpperCase() === "U") {
+        event.preventDefault();
+    }
+});
+
+document.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+});
+</script>
+</body>
